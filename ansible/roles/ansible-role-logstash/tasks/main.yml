@@ -1,0 +1,31 @@
+---
+- name: Include OS Specific setup tasks.
+  include: setup-{{ ansible_os_family }}.yml
+
+- include: plugins.yml
+- include: config.yml
+
+
+- name: Verify logstash logstash dirs permissions.
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: logstash
+    group: logstash
+    recurse: yes
+  loop:
+    - "/usr/share/logstash/"
+    - "/var/log/logstash/"
+    - "/var/lib/logstash/"
+    - "{{ logstash_input_file_dir }}"
+  tags:
+    - configure
+    - scripts
+
+- name: Ensure Logstash is started and enabled on boot.
+  service:
+    name: logstash
+    state: started
+    enabled: "{{ logstash_enabled_on_boot }}"
+  tags:
+    - configure

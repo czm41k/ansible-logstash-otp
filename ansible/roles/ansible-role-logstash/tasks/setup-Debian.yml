@@ -1,0 +1,21 @@
+---
+# Нужно добавить прокси репо для APT!
+
+- name: Ensure required dependencies are installed.
+  apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+
+- name: Install Logstash.
+  apt:
+    name: logstash
+    state: present
+
+- name: Add Logstash user to adm group (Debian).
+  user:
+    name: logstash
+    group: logstash
+    groups: adm
+  notify: restart logstash

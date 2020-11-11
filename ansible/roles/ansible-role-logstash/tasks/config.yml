@@ -1,0 +1,48 @@
+---
+- name: Copy Logstash configuration files.
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/logstash/conf.d/{{ item }}"
+    owner: logstash
+    group: logstash
+    mode: 0644
+  with_items:
+    - logstash.conf
+  notify: restart logstash
+  register: logstash_config_task_result
+  tags:
+    - configure
+
+- name: Validate Logstash config pipeline.
+  command: "/usr/share/logstash/bin/logstash 
+            --config.test_and_exit -f 
+            /etc/logstash/conf.d/ 
+            --path.settings /etc/logstash"
+  notify: restart logstash
+  when: (logstash_config_task_result is defined) and (logstash_config_task_result.changed)
+  tags:
+    - configure
+
+- name: Enable Logstash DEBUG log level.
+  lineinfile:
+    dest: /etc/systemd/system/logstash.service
+    regexp: '^ExecStart'
+    line: "ExecStart=/usr/share/logstash/bin/logstash \"--path.settings\" \"/etc/logstash\" --debug"
+  when: logstash_debug_level
+  notify: 
+  - daemon reload
+  - restart logstash
+  tags:
+    - configure
+
+- name: Disable Logstash DEBUG log level.
+  lineinfile:
+    dest: /etc/systemd/system/logstash.service
+    regexp: '^ExecStart'
+    line: "ExecStart=/usr/share/logstash/bin/logstash \"--path.settings\" \"/etc/logstash\""
+  when: not logstash_debug_level
+  notify: 
+  - daemon reload
+  - restart logstash
+  tags:
+    - configure

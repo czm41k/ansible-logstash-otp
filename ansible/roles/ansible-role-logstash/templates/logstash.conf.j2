@@ -1,0 +1,38 @@
+input {
+  http {
+    host => "{{ logstash_input_http_bind_ip }}"
+    port => {{ logstash_input_http_port }}
+    ssl => false
+  }
+  file {
+    path => "{{ logstash_input_file_dir }}/*.json"
+    exclude => "config.json"
+  }
+}
+
+filter {
+  json {
+    source => "message"
+  }
+}
+
+output {
+  stdout { codec => rubydebug { metadata => true } }
+  if [host] == "192.168.67.81" {
+    exec {
+      command => "python3 {{ logstash_input_file_dir }}/jira_task_state.py -e %{webhookEvent} -t %{timestamp} -id %{[issue][key]} -cfg {{ logstash_input_file_dir }}/config.json"
+    }
+  }
+  if [host] == "192.168.67.11" and [eventKey] !~ "repo"  {
+    exec {
+      command => "python3 {{ logstash_input_file_dir }}/bitbucket_pr.py -cfg {{ logstash_input_file_dir }}/config.json -s %{[pullRequest][state]} -n '%{[pullRequest][title]}' -prj %{[pullRequest][fromRef][repository][project][key]} -r %{[pullRequest][fromRef][repository][name]} -t %{[pullRequest][updatedDate]} -b %{[pullRequest][fromRef][displayId]}"
+    }
+  }
+  if [tribe] {
+    kafka { 
+      codec => json
+      topic_id => "{{ logstash_output_kafka_topic }}"
+      bootstrap_servers => "{% for server in logstash_output_kafka_servers %}{{ server }}{{ ", " if not loop.last else ""}}{% endfor %}"
+    }
+  }
+}

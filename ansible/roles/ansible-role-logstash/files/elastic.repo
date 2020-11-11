@@ -1,0 +1,9 @@
+[elastic-7.x]
+name=Elastic proxy repository for 7.x packages
+baseurl=https://nexus.isb/repository/elastic-yum-proxy/packages/7.x/yum
+gpgcheck=1
+gpgkey=https://nexus.isb/repository/elastic-yum-proxy//GPG-KEY-elasticsearch
+enabled=1
+autorefresh=1
+sslverify=true
+type=rpm-md

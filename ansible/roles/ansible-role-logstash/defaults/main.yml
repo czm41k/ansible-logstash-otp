@@ -1,0 +1,5 @@
+---
+logstash_dir: /usr/share/logstash
+logstash_enabled_on_boot: true
+logstash_debug_level: false
+logstash_install_plugins: []

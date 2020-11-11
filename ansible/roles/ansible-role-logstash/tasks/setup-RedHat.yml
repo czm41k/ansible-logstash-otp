@@ -1,0 +1,13 @@
+---
+- name: Copy Elastic proxy repo file.
+  copy:
+    src: elastic.repo
+    dest: /etc/yum.repos.d/elastic.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install Logstash.
+  package:
+    name: logstash
+    state: present

@@ -1,0 +1,16 @@
+---
+logstash_debug_level: false
+logstash_install_plugins: 
+  - logstash-output-exec
+
+logstash_input_http_bind_ip: 0.0.0.0
+logstash_input_http_port: 8282
+logstash_input_file_dir: /opt/devopsevents
+
+logstash_output_kafka_topic: sdlc-events-test
+logstash_output_kafka_servers:
+  - sl-t-kaf-as01.isb:9092
+  - sl-t-kaf-as02.isb:9092
+  - sl-t-kaf-as03.isb:9092
+  - sl-t-kaf-as04.isb:9092
+  - sl-t-kaf-as05.isb:9092

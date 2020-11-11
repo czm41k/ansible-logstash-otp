@@ -1,0 +1,5 @@
+---
+all:
+  hosts:
+    test-vm:
+      ansible_host: sl-t-exp42-mon.isb

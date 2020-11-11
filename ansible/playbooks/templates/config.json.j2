@@ -1,0 +1,21 @@
+{
+    "jira":{
+        "host":"{{ jira_endpoint }}",
+        "user":"{{ jira_user }}",
+        "passwd":"{{ jira_passwd }}"
+    },
+    "elk":{
+        "host":"{{ elk_endpoint }}",
+        "user":"{{ elk_user }}",
+        "passwd":"{{ elk_passwd }}",
+        "kafka-topic":"{{ elk_index }}"
+    },
+    "events": {
+        "jira": [{%- for event in jira_events %}"{{ event }}"{{ ", " if not loop.last else ""}}{%- endfor %}],
+        "bitbucket": [{%- for event in bitbucket_events %}"{{ event }}"{{ ", " if not loop.last else ""}}{%- endfor %}]
+    },
+    "logLevel": "{{ logstash_debug_level | ternary('DEBUG', 'WARNING') }}",
+    "jsonFilePath": "{{ logstash_input_file_dir }}",
+    "other":{}
+}
+

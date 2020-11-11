@@ -1,0 +1,12 @@
+jira_endpoint: https://test-jira.isb
+jira_events:
+  - jiraTaskCreated
+  - jiraTaskStarted
+  - jiraTaskDone
+
+bitbucket_events:
+  - bbPRCreated
+  - bbPRMerged
+
+elk_endpoint: https://sl-t-els-as01.isb:9200
+elk_index: new-devops-events-test

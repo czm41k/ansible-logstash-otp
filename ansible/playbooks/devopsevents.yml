@@ -1,0 +1,53 @@
+---
+- name: Configure SDLC-events test configuration
+  hosts: test-vm
+  become: yes
+  tasks:
+
+    - name: Copy team internal script.
+      copy:
+        src: files/tune.sh
+        dest: /tmp/tune.sh
+        owner: root
+        group: root
+        mode: 0744
+
+    - name: Add Nexus proxy repositories using team internal script.
+      command: /tmp/tune.sh
+
+    - name: Copy scripts folder to machine.
+      copy:
+        src: ../../app/
+        dest: "{{ logstash_input_file_dir }}"
+        owner: logstash
+        group: logstash
+        mode: 0744
+      tags:
+        - scripts
+
+    - name: Template config.json to scripts folder.
+      template:
+        src: config.json.j2
+        dest: "{{ logstash_input_file_dir }}/config.json"
+        owner: logstash
+        group: logstash
+        mode: 0644
+      tags:
+        - scripts
+
+    - name: Install Python3.
+      yum:
+        name: python3
+        state: present
+
+    - name: Install requirements for scripts.
+      pip:
+        requirements: "{{ logstash_input_file_dir }}/requirements.txt"
+      tags:
+        - scripts
+
+    - import_role:
+        name: ansible-role-java
+
+    - import_role:
+        name: ansible-role-logstash
